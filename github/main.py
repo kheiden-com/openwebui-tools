@@ -1,7 +1,7 @@
 """
 title: GitHub Project Search
 author: kheiden-com
-url: https://kheiden.com
+url: https://github.com/kheiden-com/openwebui-tools/tree/main/github
 date: 2025-04-14
 version: 1.0.2
 license: MIT
