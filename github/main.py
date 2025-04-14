@@ -3,7 +3,7 @@ title: GitHub Project Search
 author: kheiden-com
 url: https://kheiden.com
 date: 2025-04-14
-version: 1.0.1
+version: 1.0.2
 license: MIT
 description: Allow model to access GitHub project items
 """
@@ -22,12 +22,17 @@ class Tools:
         )
         organization: str = Field(
             default="kheiden-com",
-            description="The GitHub organization to search in",
+            description="The GitHub organization or user account to search in",
             json_schema_extra={"secret": False},
         )
         project_id: str = Field(
             default="2",
             description="Type: int, The GitHub Project id.",
+            json_schema_extra={"secret": False},
+        )
+        org_or_user: str = Field(
+            default="user",
+            description="Select the location of the project to query, either 'organization' or 'user'",
             json_schema_extra={"secret": False},
         )
 
@@ -69,13 +74,13 @@ class Tools:
             }
             query = """
 query {
-organization(login: "ORGANIZATION") {projectV2(number: NUMBER){id}}
+ORG_OR_USER(login: "ORGANIZATION") {projectV2(number: NUMBER){id}}
 }
 """.replace("ORGANIZATION", self.valves.organization)
-            
+            query = query.replace("ORG_OR_USER", self.valves.org_or_user.lower())
             query = query.replace("NUMBER", str(self.valves.project_id))
             output = requests.post(url, headers=headers, json={"query": query})
-            node_id = output.json().get('data').get("organization").get("projectV2").get("id")
+            node_id = output.json().get('data').get(self.valves.org_or_user.lower()).get("projectV2").get("id")
             query = """
 query {
   node(id: "NODE_ID") {
